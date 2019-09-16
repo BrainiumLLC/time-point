@@ -1,0 +1,19 @@
+[package]
+name = "time-point"
+version = "0.1.0"
+authors = ["Brainium Studios LLC"]
+edition = "2018"
+license = "MIT/Apache-2.0"
+repository = "https://github.com/BrainiumLLC/time-point"
+homepage = "https://github.com/BrainiumLLC/time-point"
+documentation = "https://docs.rs/time-point"
+description = "Less opaque, thin, type types"
+keywords = ["time", "chrono", "duration", "time-point"]
+categories = ["time"]
+
+[dependencies]
+
+[dependencies.serde]
+version = "1.0.101"
+features = ["serde_derive"]
+optional = true
