@@ -53,12 +53,28 @@ impl Duration {
         Self::new((secs * NANOS_PER_SEC as f64).round() as i64)
     }
 
+    pub fn from_millis_f32(millis: f32) -> Self {
+        Self::new((millis * NANOS_PER_MILLI as f32).round() as i64)
+    }
+
+    pub fn from_millis_f64(millis: f64) -> Self {
+        Self::new((millis * NANOS_PER_MILLI as f64).round() as i64)
+    }
+
     pub fn as_secs_f32(self) -> f32 {
         self.nanos as f32 / NANOS_PER_SEC as f32
     }
 
     pub fn as_secs_f64(self) -> f64 {
         self.nanos as f64 / NANOS_PER_SEC as f64
+    }
+
+    pub fn as_millis_f32(self) -> f32 {
+        self.nanos as f32 / NANOS_PER_MILLI as f32
+    }
+
+    pub fn as_millis_f64(self) -> f64 {
+        self.nanos as f64 / NANOS_PER_MILLI as f64
     }
 
     pub fn div_duration_f32(self, rhs: Self) -> f32 {
