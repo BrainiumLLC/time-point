@@ -1,6 +1,5 @@
-use std::{
-    mem,
-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
+use std::ops::{
+    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
 
 const NANOS_PER_MICRO: i64 = 1_000;
@@ -11,7 +10,7 @@ fn zero_std_instant() -> std::time::Instant {
     if cfg!(unix) || cfg!(windows) {
         // https://github.com/rust-lang/rust/blob/master/src/libstd/sys/unix/time.rs
         // https://github.com/rust-lang/rust/blob/master/src/libstd/sys/windows/time.rs
-        unsafe { mem::zeroed() }
+        unsafe { std::mem::zeroed() }
     } else {
         unimplemented!()
     }
@@ -25,40 +24,40 @@ pub struct Duration {
 }
 
 impl Duration {
-    pub const fn new(nanos: i64) -> Self {
+    pub const fn zero() -> Self {
+        Self::from_nanos(0)
+    }
+
+    pub const fn from_nanos(nanos: i64) -> Self {
         Self { nanos }
     }
 
-    pub const fn zero() -> Self {
-        Self::new(0)
-    }
-
     pub const fn from_secs(secs: i64) -> Self {
-        Self::new(secs * NANOS_PER_SEC)
+        Self::from_nanos(secs * NANOS_PER_SEC)
     }
 
     pub const fn from_millis(millis: i64) -> Self {
-        Self::new(millis * NANOS_PER_MILLI)
+        Self::from_nanos(millis * NANOS_PER_MILLI)
     }
 
     pub const fn from_micros(micros: i64) -> Self {
-        Self::new(micros * NANOS_PER_MICRO)
+        Self::from_nanos(micros * NANOS_PER_MICRO)
     }
 
     pub fn from_secs_f32(secs: f32) -> Self {
-        Self::new((secs * NANOS_PER_SEC as f32).round() as i64)
+        Self::from_nanos((secs * NANOS_PER_SEC as f32).round() as i64)
     }
 
     pub fn from_secs_f64(secs: f64) -> Self {
-        Self::new((secs * NANOS_PER_SEC as f64).round() as i64)
+        Self::from_nanos((secs * NANOS_PER_SEC as f64).round() as i64)
     }
 
     pub fn from_millis_f32(millis: f32) -> Self {
-        Self::new((millis * NANOS_PER_MILLI as f32).round() as i64)
+        Self::from_nanos((millis * NANOS_PER_MILLI as f32).round() as i64)
     }
 
     pub fn from_millis_f64(millis: f64) -> Self {
-        Self::new((millis * NANOS_PER_MILLI as f64).round() as i64)
+        Self::from_nanos((millis * NANOS_PER_MILLI as f64).round() as i64)
     }
 
     pub fn as_secs_f32(self) -> f32 {
@@ -99,7 +98,7 @@ impl Duration {
     pub fn from_std_duration(std: std::time::Duration) -> Self {
         let result = std.as_nanos();
         debug_assert!(result <= i64::max_value() as u128);
-        Self::new(result as _)
+        Self::from_nanos(result as _)
     }
 
     pub fn into_std_duration(self) -> std::time::Duration {
@@ -122,8 +121,9 @@ impl Into<std::time::Duration> for Duration {
 
 impl Add for Duration {
     type Output = Self;
+
     fn add(self, rhs: Self) -> Self {
-        Self::new(self.nanos + rhs.nanos)
+        Self::from_nanos(self.nanos + rhs.nanos)
     }
 }
 
@@ -135,8 +135,9 @@ impl AddAssign for Duration {
 
 impl Sub for Duration {
     type Output = Self;
+
     fn sub(self, rhs: Self) -> Self {
-        Self::new(self.nanos - rhs.nanos)
+        Self::from_nanos(self.nanos - rhs.nanos)
     }
 }
 
@@ -148,6 +149,7 @@ impl SubAssign for Duration {
 
 impl Neg for Duration {
     type Output = Self;
+
     fn neg(self) -> Self {
         Duration::zero() - self
     }
@@ -155,8 +157,9 @@ impl Neg for Duration {
 
 impl Mul<i32> for Duration {
     type Output = Self;
+
     fn mul(self, rhs: i32) -> Self {
-        Self::new(self.nanos * rhs as i64)
+        Self::from_nanos(self.nanos * rhs as i64)
     }
 }
 
@@ -175,6 +178,7 @@ impl MulAssign<i32> for Duration {
 
 impl Mul<f32> for Duration {
     type Output = Self;
+
     fn mul(self, rhs: f32) -> Self {
         Self::from_secs_f32(self.as_secs_f32() * rhs)
     }
@@ -195,6 +199,7 @@ impl MulAssign<f32> for Duration {
 
 impl Mul<f64> for Duration {
     type Output = Self;
+
     fn mul(self, rhs: f64) -> Self {
         Self::from_secs_f64(self.as_secs_f64() * rhs)
     }
@@ -202,6 +207,7 @@ impl Mul<f64> for Duration {
 
 impl Mul<Duration> for f64 {
     type Output = Duration;
+
     fn mul(self, rhs: Duration) -> Duration {
         rhs * self
     }
@@ -215,8 +221,9 @@ impl MulAssign<f64> for Duration {
 
 impl Div<i32> for Duration {
     type Output = Self;
+
     fn div(self, rhs: i32) -> Self {
-        Self::new(self.nanos / rhs as i64)
+        Self::from_nanos(self.nanos / rhs as i64)
     }
 }
 
@@ -228,6 +235,7 @@ impl DivAssign<i32> for Duration {
 
 impl Div<f32> for Duration {
     type Output = Self;
+
     fn div(self, rhs: f32) -> Self {
         Self::from_secs_f32(self.as_secs_f32() / rhs)
     }
@@ -241,6 +249,7 @@ impl DivAssign<f32> for Duration {
 
 impl Div<f64> for Duration {
     type Output = Self;
+
     fn div(self, rhs: f64) -> Self {
         Self::from_secs_f64(self.as_secs_f64() / rhs)
     }
@@ -254,8 +263,9 @@ impl DivAssign<f64> for Duration {
 
 impl Rem for Duration {
     type Output = Self;
+
     fn rem(self, rhs: Self) -> Self {
-        Self::new(self.nanos % rhs.nanos)
+        Self::from_nanos(self.nanos % rhs.nanos)
     }
 }
 
@@ -273,13 +283,13 @@ pub struct TimePoint {
 }
 
 impl TimePoint {
-    /// This does not specifically require using unix time, however, that's probably expected.
-    pub const fn new(nanos_since_zero: i64) -> Self {
-        Self { nanos_since_zero }
+    pub const fn zero() -> Self {
+        Self::from_nanos(0)
     }
 
-    pub const fn zero() -> Self {
-        Self::new(0)
+    /// This does not specifically require using unix time, however, that's probably expected.
+    pub const fn from_nanos(nanos_since_zero: i64) -> Self {
+        Self { nanos_since_zero }
     }
 
     pub fn from_secs_f32(secs_since_zero: f32) -> Self {
@@ -303,7 +313,7 @@ impl TimePoint {
     }
 
     pub fn from_std_instant(rhs: std::time::Instant) -> Self {
-        Self::new(Duration::from_std_duration(rhs - zero_std_instant()).nanos)
+        Self::from_nanos(Duration::from_std_duration(rhs - zero_std_instant()).nanos)
     }
 
     pub fn into_std_instant(self) -> std::time::Instant {
@@ -325,8 +335,9 @@ impl Into<std::time::Instant> for TimePoint {
 
 impl Add<Duration> for TimePoint {
     type Output = TimePoint;
+
     fn add(self, rhs: Duration) -> Self {
-        Self::new(self.nanos_since_zero + rhs.nanos)
+        Self::from_nanos(self.nanos_since_zero + rhs.nanos)
     }
 }
 
@@ -338,6 +349,7 @@ impl AddAssign<Duration> for TimePoint {
 
 impl Add<TimePoint> for Duration {
     type Output = TimePoint;
+
     fn add(self, rhs: TimePoint) -> TimePoint {
         rhs + self
     }
@@ -358,8 +370,9 @@ impl SubAssign<Duration> for TimePoint {
 
 impl Sub<TimePoint> for TimePoint {
     type Output = Duration;
+
     fn sub(self, rhs: TimePoint) -> Duration {
-        Duration::new(self.nanos_since_zero - rhs.nanos_since_zero)
+        Duration::from_nanos(self.nanos_since_zero - rhs.nanos_since_zero)
     }
 }
 
