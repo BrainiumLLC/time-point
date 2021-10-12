@@ -1,6 +1,6 @@
 [package]
 name = "time-point"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Brainium Studios LLC"]
 edition = "2018"
 license = "MIT/Apache-2.0"
