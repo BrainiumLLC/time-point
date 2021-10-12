@@ -283,6 +283,10 @@ pub struct TimePoint {
 }
 
 impl TimePoint {
+    pub fn now() -> Self {
+        std::time::Instant::now().into()
+    }
+
     pub const fn zero() -> Self {
         Self::from_nanos(0)
     }
